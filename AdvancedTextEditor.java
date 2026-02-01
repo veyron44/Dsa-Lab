@@ -109,44 +109,56 @@ public class AdvancedTextEditor {
     }
 
     public void undo() {
-        ActionBatch batch = undoStack.pop();
-        if (batch == null) return;
-        ActionNode current = batch.tail;
+    ActionBatch batch = undoStack.pop();
+    if (batch == null) return;
+
+    ActionNode current = batch.tail;
+
+    if (batch.type == ActionType.INSERT) {
         while (current != null) {
             Action a = current.action;
-            if (a.type == ActionType.INSERT) {
-                a.node.prev.next = a.node.next;
-                a.node.next.prev = a.node.prev;
-                cursor = a.node.prev;
-            } else {
-                a.node.prev.next = a.node;
-                a.node.next.prev = a.node;
-                cursor = a.node;
-            }
+            a.node.prev.next = a.node.next;
+            a.node.next.prev = a.node.prev;
+            cursor = a.node.prev;
             current = current.prev;
         }
-        redoStack.push(batch);
-    }
-
-    public void redo() {
-        ActionBatch batch = redoStack.pop();
-        if (batch == null) return;
-        ActionNode current = batch.head;
+    } else {
         while (current != null) {
             Action a = current.action;
-            if (a.type == ActionType.INSERT) {
-                a.node.prev.next = a.node;
-                a.node.next.prev = a.node;
-                cursor = a.node;
-            } else {
-                a.node.prev.next = a.node.next;
-                a.node.next.prev = a.node.prev;
-                cursor = a.node.prev;
-            }
+            a.node.prev.next = a.node;
+            a.node.next.prev = a.node;
+            cursor = a.node;
+            current = current.prev;
+        }
+    }
+    redoStack.push(batch);
+}
+
+    public void redo() {
+    ActionBatch batch = redoStack.pop();
+    if (batch == null) return;
+
+    ActionNode current = batch.head;
+
+    if (batch.type == ActionType.INSERT) {
+        while (current != null) {
+            Action a = current.action;
+            a.node.prev.next = a.node;
+            a.node.next.prev = a.node;
+            cursor = a.node;
             current = current.next;
         }
-        undoStack.push(batch);
+    } else {
+        while (current != null) {
+            Action a = current.action;
+            a.node.prev.next = a.node.next;
+            a.node.next.prev = a.node.prev;
+            cursor = a.node.prev;
+            current = current.next;
+        }
     }
+    undoStack.push(batch);
+}
 
     public void display() {
         System.out.print("Editor: ");
