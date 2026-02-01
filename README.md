@@ -4,4 +4,4 @@
 | Rahel Gebeyhu        |  Implemented the Advanced Text Editor program
 | Usama Ahmed          |  Implemented Session-Aware Browser Tab Manager
 
-Instructions Documented on idivisual branches.
+Instructions Documented on indivisual branches.
